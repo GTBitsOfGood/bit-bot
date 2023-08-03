@@ -1,6 +1,6 @@
 import os
 from database import give_bits_to_user, remove_bits_from_user, get_leaderboard_documents
-from utils import extract_user_id, is_positive_integer
+from helper import extract_user_id, is_positive_integer
 from dotenv import load_dotenv
 
 load_dotenv()

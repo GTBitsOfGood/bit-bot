@@ -3,11 +3,18 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request
 from slackeventsapi import SlackEventAdapter
-from actions import give_bit, remove_bit, get_leaderboard
-from utils import extract_user_id
 
 app = Flask(__name__)
 load_dotenv()
+
+import sys
+import inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
+
+from actions import give_bit, remove_bit, get_leaderboard
+from helper import extract_user_id
 
 client = slack.WebClient(
     token=os.environ["SLACK_BOT_TOKEN"]
