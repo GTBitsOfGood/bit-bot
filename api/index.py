@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request
 from slackeventsapi import SlackEventAdapter
+import json
 
 app = Flask(__name__)
 load_dotenv()
@@ -13,7 +14,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
-from actions import give_bit, remove_bit, get_leaderboard
+from actions import give_bit, remove_bit, get_leaderboard, set_team, set_team_action_handler, print_team_leaderboard
 from helper import extract_user_id
 
 client = slack.WebClient(
@@ -33,12 +34,16 @@ valid_channels = [
 Action = {
     "GIVE": "give",
     "REMOVE":  "remove",
-    "LEADERBOARD":  "leaderboard"
+    "LEADERBOARD":  "leaderboard",
+    "SET_TEAM": "set-team",
+    "TEAM_LEADERBOARD": "team-leaderboard"
 }
 ActionNameToAction = {
     Action.get("GIVE"): give_bit,
     Action.get("REMOVE"): remove_bit,
     Action.get("LEADERBOARD"): get_leaderboard,
+    Action.get("SET_TEAM"): set_team,
+    Action.get("TEAM_LEADERBOARD"): print_team_leaderboard
 }
 
 BOT_ID = client.api_call("auth.test")["user_id"]
@@ -51,6 +56,23 @@ def health():
 def handle_challenge():
     return {"challenge": request.json()['challenge']}
 
+@app.route('/slack/events/interactivity', methods=['POST'])
+def handle_interactivity():
+    try:
+        message = json.loads(request.form.get("payload"))
+        action = message.get("actions")[0].get("action_id")
+        user_id = message.get("user").get('id')
+
+        if action == "select_team_action":
+            selected_option = message.get("actions")[0].get('selected_option').get('value')
+            set_team_action_handler(client, selected_option, user_id)
+        return {}
+    except Exception as e:
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"<@{user_id}>: an exception occurred - {e}"
+        )
+
 
 @slack_event_adapter.on('app_mention')
 def app_mention(payload):
@@ -58,9 +80,50 @@ def app_mention(payload):
         event = payload.get('event', {})
         channel_id = event.get('channel')
         timestamp = event.get('ts')
-        user_id = event.get('user_id')
+        user_id = event.get('user')
+
         if channel_id not in valid_channels:
             return
+
+        text = event.get('text')
+        arguments = text.split(' ')
+        bot_id = extract_user_id(arguments[0])
+        if bot_id != BOT_ID:
+            return;
+
+        action = arguments[1]
+        if action not in Action.values():
+            client.chat_postMessage(
+                channel=os.environ["BOT_LOGS_CHANNEL"],
+                text=f"<@{user_id}>: {action} is not a valid action"
+            )
+            raise Exception(f"{action} is not a valid action")
+        
+        ActionNameToAction[action](client, arguments, user_id, channel_id)
+
+        client.reactions_add(
+            channel=channel_id,
+            timestamp=timestamp,
+            name="white_check_mark"
+        )  
+    except Exception as e:
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"<@{user_id}>: an exception occurred - {e}"
+        )
+        client.reactions_add(
+                channel=channel_id,
+                timestamp=timestamp,
+                name="x"
+            )        
+
+@slack_event_adapter.on('message.im')
+def message_im(payload):
+    try:
+        event = payload.get('event', {})
+        timestamp = event.get('ts')
+        user_id = event.get('user')
+        channel_id = event.get("channel")
 
         text = event.get('text')
         arguments = text.split(' ')
