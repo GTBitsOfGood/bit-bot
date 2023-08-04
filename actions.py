@@ -117,6 +117,8 @@ def set_team_action_handler(client, team_value, user_id):
 
 def print_team_leaderboard(client, arguments, user_id, channel_id):
     team_leaderboard = get_team_leaderboard()
+    team_leaderboard = sorted(key=lambda obj: obj['total_bits'], reverse=True)
+    
     top_teams_string = "🎉 Current Team Bit Leaders 🎉\n\n"
     for index, info in enumerate(team_leaderboard):
         medal = ""
