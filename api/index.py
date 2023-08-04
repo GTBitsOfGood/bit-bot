@@ -27,7 +27,7 @@ slack_event_adapter = SlackEventAdapter(
 )
 
 valid_channels = [
-    os.environ['BOT_TESTING_CHANNEL'],
+    os.environ['BOT_LOGS_CHANNEL'],
 ]
     
 Action = {
@@ -70,9 +70,13 @@ def app_mention(payload):
 
         action = arguments[1]
         if action not in Action.values():
+            client.chat_postMessage(
+                channel=os.environ["BOT_LOGS_CHANNEL"],
+                text=f"<@{user_id}>: {action} is not a valid action"
+            )
             raise Exception(f"{action} is not a valid action")
         
-        ActionNameToAction[action](client, arguments)
+        ActionNameToAction[action](client, arguments, user_id, channel_id)
 
         client.reactions_add(
             channel=channel_id,
@@ -80,7 +84,10 @@ def app_mention(payload):
             name="white_check_mark"
         )  
     except Exception as e:
-        print(e)
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"<@{user_id}>: an exception occurred - {e}"
+        )
         client.reactions_add(
                 channel=channel_id,
                 timestamp=timestamp,
