@@ -117,10 +117,13 @@ def app_mention(payload):
                 name="x"
             )        
 
-@slack_event_adapter.on('message.im')
+@slack_event_adapter.on('message')
 def message_im(payload):
-    try:
+    try:        
         event = payload.get('event', {})
+        if event.get('channel_type') != 'im':
+            return
+        
         timestamp = event.get('ts')
         user_id = event.get('user')
         channel_id = event.get("channel")
@@ -128,6 +131,10 @@ def message_im(payload):
         text = event.get('text')
         arguments = text.split(' ')
         bot_id = extract_user_id(arguments[0])
+
+        if user_id == BOT_ID:
+            return
+        
         if bot_id != BOT_ID:
             return;
 
