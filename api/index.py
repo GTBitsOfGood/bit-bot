@@ -64,10 +64,11 @@ def handle_interactivity():
         message = json.loads(request.form.get("payload"))
         action = message.get("actions")[0].get("action_id")
         user_id = message.get("user").get('id')
+        channel_id = message.get("channel").get('id')
 
         if action == "select_team_action":
             selected_option = message.get("actions")[0].get('selected_option').get('value')
-            set_team_action_handler(client, selected_option, user_id)
+            set_team_action_handler(client, selected_option, user_id, channel_id)
         return {}
     except Exception as e:
         client.chat_postMessage(

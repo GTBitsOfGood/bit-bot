@@ -110,8 +110,10 @@ def get_leaderboard(client, arguments, user_id, channel_id):
         text=f"<@{user_id}> just printed the leaderboard!"
     )
 
-def set_team_action_handler(client, team_value, user_id):
+def set_team_action_handler(client, team_value, user_id, channel_id):
     set_team_by_user_id(user_id, team_value)
+    client.chat_postMessage(channel=channel_id, 
+                            text=f"You set your team to {team_value}!")
     client.chat_postMessage(channel=os.environ["BOT_LOGS_CHANNEL"], 
                             text=f"<@{user_id}> set their team to {team_value}!")
 
@@ -155,10 +157,10 @@ def get_help(client, arguments, user_id, channel_id):
     f"""
     Hello! This is the bits of good bit bot! Example Commands:
     
-    *Give 10 Bits to a user:*
+    *Give 10 bits to a user:*
     - <@{BOT_ID}> give <tag the user> 10 
 
-    *Remove 10 Bits from a user:*
+    *Remove 10 bits from a user:*
     - <@{BOT_ID}> remove <tag the user> 10 
 
     *Give 10 Bits to multiple users:*
