@@ -14,7 +14,9 @@ teams = [
     "Exec",
     "Alumni",
     "Nonprofit Partnerships",
-    "Operations"
+    "Operations",
+    "Design Ops",
+    "Engineering Ops"
 ]
 
 questions = {

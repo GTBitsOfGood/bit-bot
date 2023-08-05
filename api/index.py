@@ -14,7 +14,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
-from actions import give_bit, remove_bit, get_leaderboard, set_team, set_team_action_handler, print_team_leaderboard
+from actions import give_bit, remove_bit, get_leaderboard, set_team, set_team_action_handler, print_team_leaderboard, get_help
 from helper import extract_user_id
 
 client = slack.WebClient(
@@ -36,14 +36,16 @@ Action = {
     "REMOVE":  "remove",
     "LEADERBOARD":  "leaderboard",
     "SET_TEAM": "set-team",
-    "TEAM_LEADERBOARD": "team-leaderboard"
+    "TEAM_LEADERBOARD": "team-leaderboard",
+    "HELP": "help"
 }
 ActionNameToAction = {
     Action.get("GIVE"): give_bit,
     Action.get("REMOVE"): remove_bit,
     Action.get("LEADERBOARD"): get_leaderboard,
     Action.get("SET_TEAM"): set_team,
-    Action.get("TEAM_LEADERBOARD"): print_team_leaderboard
+    Action.get("TEAM_LEADERBOARD"): print_team_leaderboard,
+    Action.get("HELP"): get_help
 }
 
 BOT_ID = client.api_call("auth.test")["user_id"]

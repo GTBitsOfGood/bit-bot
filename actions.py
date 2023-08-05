@@ -149,6 +149,33 @@ def print_team_leaderboard(client, arguments, user_id, channel_id):
         text=f"<@{user_id}> just printed the team leaderboard!"
     )
 
+def get_help(client, arguments, user_id, channel_id):
+    BOT_ID = client.api_call("auth.test")["user_id"]
+    client.chat_postMessage(channel=channel_id, text=
+    f"""
+    Hello! This is the bits of good bit bot! Example Commands:
+    
+    *Give 10 Bits to a user:*
+    - <@{BOT_ID}> give <tag the user> 10 
+
+    *Remove 10 Bits from a user:*
+    - <@{BOT_ID}> remove <tag the user> 10 
+
+    *Give 10 Bits to multiple users:*
+    - <@{BOT_ID}> give <tag user 1> <tag user 2> 10 
+
+    *Remove 10 Bits from multiple users:*
+    - <@{BOT_ID}> remove <tag user 1> <tag user 2> 10 
+
+    *Set your team:*
+    - <@{BOT_ID}> set-team
+
+    *View the bit leaderboard:*
+    - <@{BOT_ID}> leaderboard
+
+    *View the team bit leaderboard:*
+    - <@{BOT_ID}> team-leaderboard
+    """)
 
 def set_team(client, arguments, user_id, channel_id):
     team_blocks = []
