@@ -161,7 +161,7 @@ def get_help(client, arguments, user_id, channel_id):
     BOT_ID = client.api_call("auth.test")["user_id"]
     client.chat_postMessage(channel=channel_id, text=
     f"""
-    Hello! This is the bits of good bit bot! Example Commands:
+    Hello! This is the bits of good bit bot! Example commands:
     
     *Set your team:*
     - <@{BOT_ID}> set-team
@@ -185,7 +185,7 @@ def get_help(client, arguments, user_id, channel_id):
     *Give 10 Bits to multiple users:*
     - <@{BOT_ID}> give <tag user 1> <tag user 2> 10 
 
-    *Remove 10 Bits from multiple users:*
+    *Remove 10 bits from multiple users:*
     - <@{BOT_ID}> remove <tag user 1> <tag user 2> 10 
 
     *Promote a user to admin:*
