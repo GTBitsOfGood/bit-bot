@@ -51,6 +51,12 @@ def get_leaderboard_documents(limit=10):
 
     return users_collection.find(query).sort(sort_by_field_query).limit(limit)
 
+def user_is_admin(user_id):
+    user_query = { "userId": user_id }
+    pre_existing_user = users_collection.find_one(user_query)
+
+    return pre_existing_user and pre_existing_user["role"] == "admin"
+
 def set_team_by_user_id(user_id, team):
     user_query = { "userId": user_id }
 
@@ -72,3 +78,16 @@ def get_team_leaderboard():
     result = users_collection.aggregate(pipeline)
     aggregated_data = list(result)
     return aggregated_data
+
+def change_user_role(user_id, role):
+    user_query = { "userId": user_id }
+
+    pre_existing_user = users_collection.find_one(user_query)
+    insert_query = { "userId": user_id, "bits": 0, "team": "No Team", "role": role}
+    update_query = {"$set": {"role": role}}
+
+    if not pre_existing_user:
+        users_collection.insert_one(insert_query)
+    else:
+        users_collection.update_one(user_query, update_query)
+

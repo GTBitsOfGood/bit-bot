@@ -1,5 +1,5 @@
 import os
-from database import give_bits_to_user, remove_bits_from_user, get_leaderboard_documents, set_team_by_user_id, get_team_leaderboard
+from database import *
 from helper import extract_user_id, is_positive_integer
 from config import questions
 from dotenv import load_dotenv
@@ -13,6 +13,9 @@ def give_bit(client, arguments, user_id, channel_id):
             text=f"<@{user_id}>: Command expects at least three arguments, {len(arguments) - 1} were given"
         )
         raise Exception(f"Command expects at least three arguments, {len(arguments) - 1} were given");
+    
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can grant bits to others!")
     
     users = set(arguments[2:-1])
     amount = int(arguments[-1])
@@ -46,6 +49,9 @@ def remove_bit(client, arguments, user_id, channel_id):
     if len(arguments) - 1 < 3:
         raise Exception(f"Command expects at least three arguments, {len(arguments) - 1} were given");
     
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can remove bits from others!")
+
     users = set(arguments[2:-1])
     amount = int(arguments[-1])
 
@@ -157,6 +163,19 @@ def get_help(client, arguments, user_id, channel_id):
     f"""
     Hello! This is the bits of good bit bot! Example Commands:
     
+    *Set your team:*
+    - <@{BOT_ID}> set-team
+
+    *View the bit leaderboard:*
+    - <@{BOT_ID}> leaderboard
+
+    *View the team bit leaderboard:*
+    - <@{BOT_ID}> team-leaderboard
+    
+
+
+    ⛔ Admin Only Commands ⛔
+
     *Give 10 bits to a user:*
     - <@{BOT_ID}> give <tag the user> 10 
 
@@ -169,14 +188,11 @@ def get_help(client, arguments, user_id, channel_id):
     *Remove 10 Bits from multiple users:*
     - <@{BOT_ID}> remove <tag user 1> <tag user 2> 10 
 
-    *Set your team:*
-    - <@{BOT_ID}> set-team
-
-    *View the bit leaderboard:*
-    - <@{BOT_ID}> leaderboard
-
-    *View the team bit leaderboard:*
-    - <@{BOT_ID}> team-leaderboard
+    *Promote a user to admin:*
+    - <@{BOT_ID}> promote <tag the user> 
+    
+    *Demote a user:*
+    - <@{BOT_ID}> demote <tag the user> 
     """)
 
 def set_team(client, arguments, user_id, channel_id):
@@ -208,3 +224,31 @@ def set_team(client, arguments, user_id, channel_id):
 		}
 	]
     client.chat_postMessage(channel=channel_id, blocks=blocks)
+
+def promote_user(client, arguments, user_id, channel_id):
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can promote users")
+    
+    user = extract_user_id(arguments[2])
+    change_user_role(user, "admin")
+
+    client.chat_postMessage(
+        channel=os.environ["BOT_LOGS_CHANNEL"],
+        text=f"<@{user_id}> promoted <@{user}> to admin!"
+    )
+
+
+
+def demote_user(client, arguments, user_id, channel_id):
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can demote users")
+ 
+    user = extract_user_id(arguments[2])
+    change_user_role(user, "user")
+
+    client.chat_postMessage(
+        channel=os.environ["BOT_LOGS_CHANNEL"],
+        text=f"<@{user_id}> demoted <@{user}> to user!"
+    )
+
+
