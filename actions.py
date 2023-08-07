@@ -172,8 +172,6 @@ def get_help(client, arguments, user_id, channel_id):
     *View the team bit leaderboard:*
     - <@{BOT_ID}> team-leaderboard
     
-
-
     ⛔ Admin Only Commands ⛔
 
     *Give 10 bits to a user:*
