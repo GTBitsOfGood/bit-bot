@@ -29,6 +29,7 @@ slack_event_adapter = SlackEventAdapter(
 
 valid_channels = [
     os.environ['BOT_LOGS_CHANNEL'],
+    os.environ['GT_BITS_CHANNEL']
 ]
     
 Action = {
