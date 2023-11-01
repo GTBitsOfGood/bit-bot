@@ -29,7 +29,8 @@ slack_event_adapter = SlackEventAdapter(
 
 valid_channels = [
     os.environ['BOT_LOGS_CHANNEL'],
-    os.environ['GT_BITS_CHANNEL']
+    os.environ['GT_BITS_CHANNEL'],
+    os.environ['MAPSCOUT_NOTIFICATIONS_CHANNEL']
 ]
     
 Action = {
@@ -40,8 +41,7 @@ Action = {
     "TEAM_LEADERBOARD": "team-leaderboard",
     "HELP": "help",
     "PROMOTE": "promote",
-    "DEMOTE": "demote"
-
+    "DEMOTE": "demote",
 }
 ActionNameToAction = {
     Action.get("GIVE"): give_bit,
@@ -82,6 +82,11 @@ def handle_interactivity():
             text=f"<@{user_id}>: an exception occurred - {e}"
         )
 
+@app.route('/bog/mapscout', methods=['POST'])
+def handle_mapscount_event():
+    email = request.json['email']
+    client.chat_postMessage(channel=os.environ['MAPSCOUT_NOTIFICATIONS_CHANNEL'], text=f"Mapscout Waitlist Notificaction: `{email}`")
+    return { "success": True }
 
 @slack_event_adapter.on('app_mention')
 def app_mention(payload):
