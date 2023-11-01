@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 from flask import Flask, request
 from slackeventsapi import SlackEventAdapter
 import json
+from flask_cors import CORS
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/bog/*": {"origins": "*"}})
 load_dotenv()
 
 import sys
