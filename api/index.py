@@ -86,7 +86,7 @@ def handle_interactivity():
 def handle_mapscount_event():
     email = request.json['email']
     client.chat_postMessage(channel=os.environ['MAPSCOUT_NOTIFICATIONS_CHANNEL'], text=f"Mapscout Waitlist Notificaction: `{email}`")
-    return { "success": True }
+    return { "success": True, "email": email }
 
 @slack_event_adapter.on('app_mention')
 def app_mention(payload):
