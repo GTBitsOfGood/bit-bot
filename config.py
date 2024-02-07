@@ -1,9 +1,10 @@
 teams = [
-    "Angels Among Us",
+    "GT Scheduler",
     "Brain Exercise Initiative",
     "Canine Assistants",
     "Heart of Passion",
-    "Helping Mamas (VMS)",
+    "Atlanta Firefighters",
+    "Jennifer Ann's Group",
     "Product Maintenance",
     "Infra",
     "Southface",
@@ -16,9 +17,7 @@ teams = [
     "Nonprofit Partnerships",
     "Operations",
     "Design Ops",
-    "Engineering Ops"
+    "Engineering Ops",
 ]
 
-questions = {
-    "TEAM": "What is your team?"
-}
+questions = {"TEAM": "What is your team?"}
