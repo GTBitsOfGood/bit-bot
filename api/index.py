@@ -1,7 +1,7 @@
 import slack
 import os
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, Response, request
 from slackeventsapi import SlackEventAdapter
 import json
 from flask_cors import CORS
@@ -110,9 +110,15 @@ def handle_mapscount_event():
 def app_mention(payload):
     try:
         event = payload.get("event", {})
+        client_message_id = event.get("client_msg_id")
         channel_id = event.get("channel")
         timestamp = event.get("ts")
         user_id = event.get("user")
+
+        if get_message_by_id(client_message_id):
+            return Response(200)
+        else:
+            create_message_id(client_message_id)
 
         if channel_id not in valid_channels:
             return
@@ -129,12 +135,14 @@ def app_mention(payload):
 
         ActionNameToAction[action](client, arguments, user_id, channel_id)
 
-        client.reactions_add(
+        response = client.reactions_add(
             channel=channel_id,
             timestamp=timestamp,
             name="white_check_mark",
             headers={"x-slack-no-retry": "1"},
         )
+
+        return Response(200)
     except Exception as e:
         client.chat_postMessage(
             channel=os.environ["BOT_LOGS_CHANNEL"],
