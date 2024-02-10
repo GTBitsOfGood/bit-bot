@@ -135,7 +135,7 @@ def app_mention(payload):
 
         ActionNameToAction[action](client, arguments, user_id, channel_id)
 
-        response = client.reactions_add(
+        client.reactions_add(
             channel=channel_id,
             timestamp=timestamp,
             name="white_check_mark",
@@ -176,6 +176,12 @@ def message_im(payload):
 
         if bot_id != BOT_ID:
             return
+
+        client_message_id = event.get("client_msg_id")
+        if get_message_by_id(client_message_id):
+            return Response(200)
+        else:
+            create_message_id(client_message_id)
 
         action = arguments[1]
         if action not in Action.values():
