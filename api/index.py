@@ -109,10 +109,6 @@ def handle_mapscount_event():
 @slack_event_adapter.on("app_mention")
 def app_mention(payload):
     try:
-        client.chat_postMessage(
-            channel=os.environ["BOT_LOGS_CHANNEL"],
-            text=f"Debug Session: {payload}",
-        )
         event = payload.get("event", {})
         channel_id = event.get("channel")
         timestamp = event.get("ts")
