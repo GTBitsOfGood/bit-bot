@@ -109,6 +109,10 @@ def handle_mapscount_event():
 @slack_event_adapter.on("app_mention")
 def app_mention(payload):
     try:
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"Debug Session: {payload}",
+        )
         event = payload.get("event", {})
         channel_id = event.get("channel")
         timestamp = event.get("ts")
@@ -130,14 +134,22 @@ def app_mention(payload):
         ActionNameToAction[action](client, arguments, user_id, channel_id)
 
         client.reactions_add(
-            channel=channel_id, timestamp=timestamp, name="white_check_mark"
+            channel=channel_id,
+            timestamp=timestamp,
+            name="white_check_mark",
+            headers={"x-slack-no-retry": "1"},
         )
     except Exception as e:
         client.chat_postMessage(
             channel=os.environ["BOT_LOGS_CHANNEL"],
             text=f"<@{user_id}>: an exception occurred - {e}",
         )
-        client.reactions_add(channel=channel_id, timestamp=timestamp, name="x")
+        client.reactions_add(
+            channel=channel_id,
+            timestamp=timestamp,
+            name="x",
+            headers={"x-slack-no-retry": "1"},
+        )
 
 
 @slack_event_adapter.on("message")
@@ -168,14 +180,22 @@ def message_im(payload):
         ActionNameToAction[action](client, arguments, user_id, channel_id)
 
         client.reactions_add(
-            channel=channel_id, timestamp=timestamp, name="white_check_mark"
+            channel=channel_id,
+            timestamp=timestamp,
+            name="white_check_mark",
+            headers={"x-slack-no-retry": "1"},
         )
     except Exception as e:
         client.chat_postMessage(
             channel=os.environ["BOT_LOGS_CHANNEL"],
             text=f"<@{user_id}>: an exception occurred - {e}",
         )
-        client.reactions_add(channel=channel_id, timestamp=timestamp, name="x")
+        client.reactions_add(
+            channel=channel_id,
+            timestamp=timestamp,
+            name="x",
+            headers={"x-slack-no-retry": "1"},
+        )
 
 
 if __name__ == "__main__":
