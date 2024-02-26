@@ -10,6 +10,20 @@ users_collection = db_client["users"]
 messages_collection = db_client["messages"]
 
 
+def get_bits_by_user_id(user_id):
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    users_collection = db_client["users"]
+    bit_query = {"userId": user_id}
+
+    user = users_collection.find_one(bit_query)
+    if user:
+        return user.get("bits", 0)
+    else:
+        return 0
+
+
 def give_bits_to_user(user_id, amount):
     if db_client is None:
         raise Exception("Failed to connect to database")
@@ -107,3 +121,8 @@ def get_message_by_id(message_id):
     message_query = {"messageId": message_id}
     pre_existing_message = messages_collection.find_one(message_query)
     return pre_existing_message
+
+
+def set_teams_to_no_team():
+    update_query = {"$set": {"team": "No Team"}}
+    users_collection.update_many({}, update_query)

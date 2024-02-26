@@ -41,6 +41,8 @@ Action = {
     "HELP": "help",
     "PROMOTE": "promote",
     "DEMOTE": "demote",
+    "CLEAR_TEAMS": "clear-teams",
+    "GET_BITS": "get-bits",
 }
 ActionNameToAction = {
     Action.get("GIVE"): give_bit,
@@ -51,6 +53,8 @@ ActionNameToAction = {
     Action.get("HELP"): get_help,
     Action.get("PROMOTE"): promote_user,
     Action.get("DEMOTE"): demote_user,
+    Action.get("CLEAR_TEAMS"): clear_teams,
+    Action.get("GET_BITS"): get_bits,
 }
 
 BOT_ID = client.api_call("auth.test")["user_id"]
