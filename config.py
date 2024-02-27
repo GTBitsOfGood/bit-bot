@@ -7,7 +7,6 @@ teams = [
     "Jennifer Ann's Group",
     "Product Maintenance",
     "Infra",
-    "Southface",
     "Dev Bootcamp",
     "Design Bootcamp",
     "Brand",
