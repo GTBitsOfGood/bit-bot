@@ -262,7 +262,6 @@ def get_help(client, arguments, user_id, channel_id):
     *Clear Bits:*
     - <@{BOT_ID}> clear-bits 
 
-
     """,
     )
 
