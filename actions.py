@@ -10,7 +10,7 @@ load_dotenv()
 
 def get_bits(client, arguments, user_id, channel_id):
     if len(arguments) > 2:
-        tag = arguments[2:]
+        tag = " ".join(arguments[2:])
         bits = get_bits_by_user_id_from_history(user_id, tag)
     else:
         bits = get_bits_by_user_id(user_id)
@@ -106,12 +106,7 @@ def remove_bit(client, arguments, user_id, channel_id):
 
 def get_leaderboard(client, arguments, user_id, channel_id):
     if len(arguments) > 2:
-        tag = arguments[2:]
-        client.chat_postMessage(
-            channel=os.environ["BOT_LOGS_CHANNEL"],
-            text=f"{arguments}, {tag}",
-        )
-
+        tag = " ".join(arguments[2:])
         users = get_leaderboard_documents_from_history(tag)
     else:
         users = get_leaderboard_documents()
@@ -168,7 +163,7 @@ def set_team_action_handler(client, team_value, user_id, channel_id):
 
 def print_team_leaderboard(client, arguments, user_id, channel_id):
     if len(arguments) > 2:
-        tag = arguments[2:]
+        tag = " ".join(arguments[2:])
         team_leaderboard = get_team_leaderboard_from_history(tag)
     else:
         team_leaderboard = get_team_leaderboard()
@@ -267,6 +262,9 @@ def get_help(client, arguments, user_id, channel_id):
     *Clear Bits:*
     - <@{BOT_ID}> clear-bits 
 
+    *Save Bit History:*
+    - <@{BOT_ID}> save-bit-history <semester tag> 
+    - I.e., <@{BOT_ID}> save-bit-history Spring 2024
     """,
     )
 
