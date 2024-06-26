@@ -73,6 +73,13 @@ def record_bit_history(tag):
         bit_history_collection.insert_one(bit_history_entry)
 
 
+def remove_bit_history_by_tag(tag):
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    bit_history_collection.delete_many({"tag": tag})
+
+
 def remove_bits_from_user(user_id, amount):
     if db_client is None:
         raise Exception("Failed to connect to database")

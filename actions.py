@@ -265,6 +265,11 @@ def get_help(client, arguments, user_id, channel_id):
     *Save Bit History:*
     - <@{BOT_ID}> save-bit-history <semester tag> 
     - I.e., <@{BOT_ID}> save-bit-history Spring 2024
+
+    *Delete Bit History:*
+    - <@{BOT_ID}> delete-bit-history <semester tag> 
+    - I.e., <@{BOT_ID}> delete-bit-history Spring 2024
+
     """,
     )
 
@@ -345,7 +350,7 @@ def clear_teams(client, arguments, user_id, channel_id):
 
 def save_bit_history(client, arguments, user_id, channel_id):
     if not user_is_admin(user_id):
-        raise Exception("Only admins can clear teams")
+        raise Exception("Only admins can save bit history")
 
     tag = " ".join(arguments[2:])
 
@@ -354,4 +359,18 @@ def save_bit_history(client, arguments, user_id, channel_id):
     client.chat_postMessage(
         channel=os.environ["BOT_LOGS_CHANNEL"],
         text=f"<@{user_id}> saved bit history for {tag}!",
+    )
+
+
+def delete_bit_history(client, arguments, user_id, channel_id):
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can delete bit history")
+
+    tag = " ".join(arguments[2:])
+
+    remove_bit_history_by_tag(tag)
+
+    client.chat_postMessage(
+        channel=os.environ["BOT_LOGS_CHANNEL"],
+        text=f"<@{user_id}> deleted bit history for {tag}!",
     )
