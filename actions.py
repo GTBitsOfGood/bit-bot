@@ -215,7 +215,7 @@ def get_help(client, arguments, user_id, channel_id):
     - <@{BOT_ID}> get-bits
 
     *View how many bits you have in a previous semester:*
-    - <@{BOT_ID}> get-bits
+    - <@{BOT_ID}> get-bits <semester tag>
     - I.e., <@{BOT_ID}> get-bits Spring 2024
 
     *Set your team:*
