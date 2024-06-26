@@ -107,6 +107,11 @@ def remove_bit(client, arguments, user_id, channel_id):
 def get_leaderboard(client, arguments, user_id, channel_id):
     if len(arguments) > 2:
         tag = arguments[2:]
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"{arguments}, {tag}",
+        )
+
         users = get_leaderboard_documents_from_history(tag)
     else:
         users = get_leaderboard_documents()
