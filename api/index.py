@@ -43,6 +43,8 @@ Action = {
     "DEMOTE": "demote",
     "CLEAR_TEAMS": "clear-teams",
     "GET_BITS": "get-bits",
+    "SAVE_BIT_HISTORY": "save-bit-history",
+    "CLEAR_BITS": "clear-bits",
 }
 ActionNameToAction = {
     Action.get("GIVE"): give_bit,
@@ -55,6 +57,8 @@ ActionNameToAction = {
     Action.get("DEMOTE"): demote_user,
     Action.get("CLEAR_TEAMS"): clear_teams,
     Action.get("GET_BITS"): get_bits,
+    Action.get("SAVE_BIT_HISTORY"): save_bit_history,
+    Action.get("CLEAR_BITS"): save_bit_history,
 }
 
 BOT_ID = client.api_call("auth.test")["user_id"]

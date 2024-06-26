@@ -8,6 +8,7 @@ mongo_client = pymongo.MongoClient(os.environ["MONGO_DB_URL"])
 db_client = mongo_client[os.environ["MONGO_DB_DATABASE"]]
 users_collection = db_client["users"]
 messages_collection = db_client["messages"]
+bit_history_collection = db_client["bit_history"]
 
 
 def get_bits_by_user_id(user_id):
@@ -18,6 +19,19 @@ def get_bits_by_user_id(user_id):
     bit_query = {"userId": user_id}
 
     user = users_collection.find_one(bit_query)
+    if user:
+        return user.get("bits", 0)
+    else:
+        return 0
+
+
+def get_bits_by_user_id_from_history(user_id, tag):
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    bit_query = {"userId": user_id, "tag": tag}
+
+    user = bit_history_collection.find_one(bit_query)
     if user:
         return user.get("bits", 0)
     else:
@@ -39,6 +53,24 @@ def give_bits_to_user(user_id, amount):
         users_collection.insert_one(insert_query)
     else:
         users_collection.update_one(user_query, update_query)
+
+
+def record_bit_history(tag):
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    users_collection = db_client["users"]
+
+    users = users_collection.find({})
+
+    for user in users:
+        user_id = user["userId"]
+        bits = user["bits"]
+        team = user["team"]
+
+        bit_history_entry = {"bits": bits, "userId": user_id, "tag": tag, "team": team}
+
+        bit_history_collection.insert_one(bit_history_entry)
 
 
 def remove_bits_from_user(user_id, amount):
@@ -71,11 +103,47 @@ def get_leaderboard_documents(limit=10):
     return users_collection.find(query).sort(sort_by_field_query).limit(limit)
 
 
+def get_leaderboard_documents_from_history(tag, limit=10):
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    sort_by_field_query = [("bits", pymongo.DESCENDING)]
+
+    return (
+        bit_history_collection.find({"tag": tag}).sort(sort_by_field_query).limit(limit)
+    )
+
+
+def get_team_leaderboard_from_history(tag):
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    bit_history_collection = db_client["bit_history"]
+
+    pipeline = [
+        {"$match": {"tag": tag}},
+        {"$group": {"_id": "$team", "total_bits": {"$sum": "$bits"}}},
+        {"$sort": {"total_bits": -1}},
+    ]
+
+    result = bit_history_collection.aggregate(pipeline)
+    aggregated_data = list(result)
+    return aggregated_data
+
+
 def user_is_admin(user_id):
     user_query = {"userId": user_id}
     pre_existing_user = users_collection.find_one(user_query)
 
     return pre_existing_user and pre_existing_user["role"] == "admin"
+
+
+def set_user_bits_to_zero():
+    if db_client is None:
+        raise Exception("Failed to connect to database")
+
+    users_collection = db_client["users"]
+    users_collection.update_many({}, {"$set": {"bits": 0}})
 
 
 def set_team_by_user_id(user_id, team):

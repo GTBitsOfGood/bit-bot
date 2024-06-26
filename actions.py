@@ -9,7 +9,12 @@ load_dotenv()
 
 
 def get_bits(client, arguments, user_id, channel_id):
-    bits = get_bits_by_user_id(user_id)
+    if len(arguments) > 2:
+        tag = arguments[2:]
+        bits = get_bits_by_user_id_from_history(user_id, tag)
+    else:
+        bits = get_bits_by_user_id(user_id)
+
     client.chat_postMessage(
         channel=channel_id,
         text=f"You have {bits} bits",
@@ -100,7 +105,12 @@ def remove_bit(client, arguments, user_id, channel_id):
 
 
 def get_leaderboard(client, arguments, user_id, channel_id):
-    users = get_leaderboard_documents()
+    if len(arguments) > 2:
+        tag = arguments[2:]
+        users = get_leaderboard_documents_from_history(tag)
+    else:
+        users = get_leaderboard_documents()
+
     user_bit_info = []
     for user in users:
         user_bit_info.append(
@@ -152,7 +162,12 @@ def set_team_action_handler(client, team_value, user_id, channel_id):
 
 
 def print_team_leaderboard(client, arguments, user_id, channel_id):
-    team_leaderboard = get_team_leaderboard()
+    if len(arguments) > 2:
+        tag = arguments[2:]
+        team_leaderboard = get_team_leaderboard_from_history(tag)
+    else:
+        team_leaderboard = get_team_leaderboard()
+
     team_leaderboard = sorted(
         team_leaderboard, key=lambda obj: obj["total_bits"], reverse=True
     )
@@ -199,14 +214,27 @@ def get_help(client, arguments, user_id, channel_id):
     *View how many bits you have:*
     - <@{BOT_ID}> get-bits
 
+    *View how many bits you have in a previous semester:*
+    - <@{BOT_ID}> get-bits
+    - I.e., <@{BOT_ID}> get-bits Spring 2024
+
     *Set your team:*
     - <@{BOT_ID}> set-team
 
     *View the bit leaderboard:*
     - <@{BOT_ID}> leaderboard
 
+    *View the bit leaderboard in a previous semester:*
+    - <@{BOT_ID}> leaderboard <semester tag>
+    - I.e., <@{BOT_ID}> leaderboard Spring 2024
+
     *View the team bit leaderboard:*
     - <@{BOT_ID}> team-leaderboard
+
+    *View the team bit leaderboard in a previous semester:*
+    - <@{BOT_ID}> team-leaderboard <semester tag>
+    - I.e., <@{BOT_ID}> team-leaderboard Spring 2024
+
     
     ⛔ Admin Only Commands ⛔
 
@@ -230,6 +258,10 @@ def get_help(client, arguments, user_id, channel_id):
 
     *Clear Teams:*
     - <@{BOT_ID}> clear-teams 
+
+    *Clear Bits:*
+    - <@{BOT_ID}> clear-bits 
+
 
     """,
     )
@@ -288,6 +320,16 @@ def demote_user(client, arguments, user_id, channel_id):
     )
 
 
+def clear_bits(client, arguments, user_id, channel_id):
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can demote users")
+
+    set_user_bits_to_zero()
+    client.chat_postMessage(
+        channel=os.environ["BOT_LOGS_CHANNEL"], text=f"<@{user_id}> cleared bits!"
+    )
+
+
 def clear_teams(client, arguments, user_id, channel_id):
     if not user_is_admin(user_id):
         raise Exception("Only admins can clear teams")
@@ -296,4 +338,18 @@ def clear_teams(client, arguments, user_id, channel_id):
 
     client.chat_postMessage(
         channel=os.environ["BOT_LOGS_CHANNEL"], text=f"<@{user_id}> cleared all teams!"
+    )
+
+
+def save_bit_history(client, arguments, user_id, channel_id):
+    if not user_is_admin(user_id):
+        raise Exception("Only admins can clear teams")
+
+    tag = " ".join(arguments[2:])
+
+    record_bit_history(tag)
+
+    client.chat_postMessage(
+        channel=os.environ["BOT_LOGS_CHANNEL"],
+        text=f"<@{user_id}> saved bit history for {tag}!",
     )
