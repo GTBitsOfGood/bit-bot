@@ -7,7 +7,7 @@ import json
 from flask_cors import CORS
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/bog/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/bog/*": {"origins": "*"}, r"/api/*": {"origins": "*"}})
 load_dotenv()
 
 import sys
