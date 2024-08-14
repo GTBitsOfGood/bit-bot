@@ -116,6 +116,46 @@ def handle_mapscount_event():
     return {"success": True, "email": email}
 
 
+@app.route("/api/integrations/give-bits", methods=["POST"])
+def integration_give_bits():
+    try:
+        # this can be anything - just used for logging purposes
+        integration_name = request.json["integration_name"]
+        # amount of bits
+        amount = request.json["amount"]
+        # user you want to give bits to
+        user_id = request.json["user_id"]
+
+        auth_token = request.headers.get("Authorization", "")
+        if auth_token:
+            # You can use Bearer <token> or just <token> as the header
+            auth_token = auth_token.split(" ")[-1]
+
+        if auth_token != os.getenv("INTEGRATION_SECRET_TOKEN"):
+            return Response(
+                {
+                    "success": False,
+                    "message": "You are not authorized to access this route",
+                },
+                401,
+            )
+
+        integration_give_bit(client, integration_name, user_id, amount)
+        return Response(
+            {
+                "success": True,
+                "message": f"{integration_name}: successfully gave bits to {user_id}",
+            },
+            200,
+        )
+    except Exception as e:
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"<@{integration_name}>: an exception occurred - {e}",
+        )
+        return Response({"success": False, "message": f"{e}"}, 500)
+
+
 @slack_event_adapter.on("app_mention")
 def app_mention(payload):
     try:
@@ -152,7 +192,13 @@ def app_mention(payload):
             headers={"x-slack-no-retry": "1"},
         )
 
-        return Response(200)
+        return Response(
+            {
+                "success": True,
+                "message": f"action successful",
+            },
+            200,
+        )
     except Exception as e:
         client.chat_postMessage(
             channel=os.environ["BOT_LOGS_CHANNEL"],

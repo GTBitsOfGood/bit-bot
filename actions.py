@@ -374,3 +374,27 @@ def delete_bit_history(client, arguments, user_id, channel_id):
         channel=os.environ["BOT_LOGS_CHANNEL"],
         text=f"<@{user_id}> deleted bit history for {tag}!",
     )
+
+
+def integration_give_bit(client, integration_name, user_id, amount):
+    if not is_positive_integer(amount):
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"<@{integration_name}>: {amount} is not a valid amount; {amount} must be an integer amount > 0",
+        )
+        raise Exception(
+            f"{amount} is not a valid amount; {amount} must be an integer amount > 0"
+        )
+
+    if not client.users_info(user=user_id)["ok"]:
+        client.chat_postMessage(
+            channel=os.environ["BOT_LOGS_CHANNEL"],
+            text=f"<@{integration_name}>: Mentioned user, {user_id}, does not exist.",
+        )
+        raise Exception(f"Mentioned user, {user_id}, does not exist.")
+
+    give_bits_to_user(user_id, amount)
+    client.chat_postMessage(
+        channel=os.environ["BOT_LOGS_CHANNEL"],
+        text=f"<@{integration_name}> gave {amount} bits to <@{user_id}>",
+    )
