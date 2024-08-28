@@ -2,7 +2,7 @@ import os
 import pymongo
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("./api/.env")
 
 mongo_client = pymongo.MongoClient(os.environ["MONGO_DB_URL"])
 db_client = mongo_client[os.environ["MONGO_DB_DATABASE"]]

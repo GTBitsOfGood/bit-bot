@@ -329,7 +329,7 @@ def demote_user(client, arguments, user_id, channel_id):
 
 def clear_bits(client, arguments, user_id, channel_id):
     if not user_is_admin(user_id):
-        raise Exception("Only admins can demote users")
+        raise Exception("Only admins can clear bits")
 
     set_user_bits_to_zero()
     client.chat_postMessage(
@@ -398,3 +398,7 @@ def integration_give_bit(client, integration_name, user_id, amount):
         channel=os.environ["BOT_LOGS_CHANNEL"],
         text=f"<@{integration_name}> gave {amount} bits to <@{user_id}>",
     )
+
+
+if __name__ == "__main__":
+    remove_bit_history_by_tag("")
