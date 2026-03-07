@@ -39,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: user/app:latest
+          tags: bitsofgood/bit-bot:latest
 
       - name: Update deployment status (success)
         if: success()
