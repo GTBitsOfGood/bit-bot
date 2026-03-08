@@ -1,12 +1,8 @@
 name: deploy bit-bot
-# On pull request, make a deployment to Preview
-# On merge into main, make a deployment to Develop
-# On merge into prod, flag prod, make a deployment to Production
+
 on:
   push:
-    branches: [main, production]
-  pull_request:
-    branches: [main]
+    branches: [production]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,8 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set pipeline
         id: pipeline
-        # if its a PR, then its for preview, else its for development or prod based on what it's being pushed to.
-        run: echo ::set-output name=pipeline::${{ github.event_name == 'pull_request' && 'Preview' || (github.ref == 'refs/heads/production' && 'Production' || 'Development') }}
+        run: echo ::set-output name=pipeline::Production
 
       - uses: chrnorm/deployment-action@releases/v1
         name: Create GitHub deployment
