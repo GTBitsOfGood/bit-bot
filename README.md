@@ -17,3 +17,7 @@ flask run -p 8080
 ```
 
 ## Deployment
+Bit Bot is deployed as an Azure App Service on the free tier. When deploying for
+the first time, environment variables must be installed manually. The CI/CD
+pipeline builds and uploads a new Docker image. Updates to the Docker image must
+be deployed manually by restarting the App Service.
